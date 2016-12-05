@@ -1,12 +1,19 @@
 {
-  "name": "openshift-cartridge-nodejs-template",
-  "version": "1.0.1",
-  "description": "Custom Node.js cartridge for OpenShift - sample application",
-  "private": true,
-  "main": "start.js",
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
   "scripts": {
-    "start": "node --use_strict start.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node main.js"
   },
-  "author": "Ionut-Cristian Florescu <ionut.florescu@gmail.com>",
-  "license": "ISC"
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "co": "^4.6.0",
+    "discord.js": "^10.0.1",
+    "jsdom": "^9.8.3",
+    "node-fetch": "^1.6.3",
+    "node-persist": "^2.0.7"
+  }
 }
