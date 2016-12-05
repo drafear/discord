@@ -52,7 +52,6 @@ const init = () => {
             return storage.get("patchnotes").then((value) => {
                 if (value !== undefined) {
                     global.patchnotes = value;
-                    global.patchnotes = {};
                 }
                 else {
                     global.patchnotes = {};
@@ -87,7 +86,7 @@ const getPatchnotes = () => {
     });
 };
 const say = (msg) => {
-    getChannel("test").sendMessage(msg);
+    getChannel("patchnotes").sendMessage(msg);
 };
 const check = ({url, title}) => {
     if ( url in global.patchnotes ) return;
