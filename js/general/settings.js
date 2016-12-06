@@ -1,3 +1,4 @@
+exports.isTest = process.env.OPENSHIFT_MONGODB_DB_PASSWORD ? false : true;
 exports.token = "MjU1Njg2NzIzMzQ4OTg3OTA0.CyhOYA.7M_eXtgxiCuxnAAkpoaAl19BaY8",
 exports.url = {
     list: "http://us.battle.net/forums/en/overwatch/21446648/",

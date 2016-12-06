@@ -12,6 +12,7 @@ exports.init = () => {
         const channels = {
             text: {},
             voice: {},
+            dm: {},
         };
         for (const [id, channel] of client.channels) {
             if (channel.name in channels[channel.type]) {

@@ -17,7 +17,7 @@ exports.init = () => {
             }
         });
         exports.db = {
-            patchnotes: db.model('Patchnotes', require('./patchnote-watcher.js').createModel(global.mongoose)),
+            patchnotes: db.model('Patchnotes', require('../patchnote-watcher/main.js').createModel(global.mongoose)),
         };
     });
 };

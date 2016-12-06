@@ -1,10 +1,10 @@
 'use strict';
 
 const global = {
-    lib: require('./lib.js'),
-    discord: require('./discord.js'),
-    model: require('./model.js'),
-    settings: require('./settings.js'),
+    lib: require('./js/general/lib.js'),
+    discord: require('./js/general/discord.js'),
+    model: require('./js/general/model.js'),
+    settings: require('./js/general/settings.js'),
     client: null,
 };
 
@@ -17,12 +17,9 @@ const init = () => {
     ]);
 };
 
-// client.on('message', msg => {
-//     if (msg.content === 'ping') msg.reply('Pong!');
-// });
-
 const main = () => {
-    require('./patchnote-watcher.js').run(global.client, global.model.db.patchnotes);
+    require('./js/patchnote-watcher/main.js').run(global.client, global.model.db.patchnotes);
+    require('./js/terminal/main.js').run(global.client);
 };
 
 init().then(main);

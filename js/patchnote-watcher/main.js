@@ -3,13 +3,13 @@
 const global = {
     prefix: "[Patchnote Watcher]",
     jsdom: require('jsdom'),
-    lib: require('./lib.js'),
+    lib: require('../general/lib.js'),
     client: null,
     db: null,
 };
 
 const say = (msg) => {
-    global.client.getTextChannel("patchnotes").sendMessage(msg);
+    global.client.getTextChannel(global.settings.isTest ? "test" : "patchnotes").sendMessage(msg);
 };
 const log = (msg) => {
     global.lib.log(global.client, global.prefix, msg);
