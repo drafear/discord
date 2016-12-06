@@ -9,7 +9,7 @@ const global = {
 };
 
 const say = (msg) => {
-    global.client.getTextChannel("test").sendMessage(msg);
+    global.client.getTextChannel("patchnotes").sendMessage(msg);
 };
 const log = (msg) => {
     global.lib.log(global.client, global.prefix, msg);
