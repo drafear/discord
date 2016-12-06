@@ -9,11 +9,18 @@ exports.sleep = (ms) => {
         return global.sleep(ms);
     }
 };
+const toString = (...objs) => {
+    return objs.map((obj) => {
+        return JSON.stringify(obj).replace(/^"(.*)"$/, "$1");
+    }).join(" ");
+}
 exports.log = (client, ...msgs) => {
     console.log.apply(null, msgs);
-    client.getTextChannel("botlog").sendMessage(JSON.stringify.apply(null, msgs));
+    const msg = toString.apply(null, msgs);
+    client.getTextChannel("botlog").sendMessage(msg);
 };
 exports.error = (client, ...errors) => {
     console.error.apply(null, errors);
-    client.getTextChannel("botlog").sendMessage(`\`${JSON.stringify.apply(null, msgs)}\``);
+    const msg = toString.apply(null, errors);
+    client.getTextChannel("botlog").sendMessage(`\`${msg}\``);
 };
