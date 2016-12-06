@@ -86,7 +86,7 @@ const getPatchnotes = () => {
     });
 };
 const say = (msg) => {
-    getChannel("patchnotes").sendMessage(msg);
+    getChannel("test").sendMessage(msg);
 };
 const check = ({url, title}) => {
     if ( url in global.patchnotes ) return;
