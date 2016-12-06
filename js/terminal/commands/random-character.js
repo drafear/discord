@@ -1,33 +1,54 @@
 'use strict';
 
 const global = {
+    lineparser: require('../../general/lineparser.js'),
     fs: require('fs'),
     classes: ["offense", "defense", "tank", "support"],
     path: {
         imgroot: "image/hero",
     },
     client: null,
+    message: null,
 };
 
 exports.explanation = "Choose a random character.";
 
-exports.init = (base) => {
-    return require('commander')
-        .option("-o, --offense", "Include Offense Characters")
-        .option("-d, --defense", "Include Defense Characters")
-        .option("-t, --tank", "Include Tank Character")
-        .option("-s, --support", "Include Support Character")
+exports.init = (client, msg) => {
+    global.client = client;
+    global.message = msg;
+    global.parser = global.lineparser.init({
+        program: "$rc",
+        name: "Random Character Chooser",
+        version: "1.0.0",
+        options: {
+            flags: [
+                ["h", "help", "Show this text"],
+                ["o", "offense", "Include Offense Characters"],
+                ["d", "defense", "Include Defense Characters"],
+                ["t", "tank", "Include Tank Characters"],
+                ["s", "support", "Include Support Characters"],
+            ],
+        },
+        usages: [
+            [null, ["h"], null, "help", help],
+            [null, ["[o]", "[d]", "[t]", "[s]"], null, "choose", run],
+        ],
+    });
+    return global.parser;
 };
 
-exports.run = (client, param, msg) => {
-    global.client = client;
-    let useClasses = global.classes.filter(cls => param[cls]);
+const help = (r, token) => {
+    global.message.reply( `\`\`\`${r.help()}\`\`\`` );
+};
+
+const run = ({parameters: params, flags: flags}, token) => {
+    let useClasses = global.classes.filter(cls => flags[cls]);
     if (useClasses.length === 0) {
         useClasses = global.classes;
     }
     let targets = [];
     Promise.all(
-        global.classes.map((cls) => {
+        useClasses.map((cls) => {
             return new Promise((resolve, reject) => {
                 global.fs.readdir(`${global.path.imgroot}/${cls}`, (err, files) => {
                     if (err) throw err;
@@ -40,7 +61,8 @@ exports.run = (client, param, msg) => {
         const heroImgFile = targets[Math.floor(Math.random()*targets.length)];
         const heroNameSmall = heroImgFile.replace(/^.*\/([^\/]*)\.[^\.]*$/, "$1");
         const heroName = heroNameSmall.charAt(0).toUpperCase() + heroNameSmall.substr(1);
-        msg.reply(`${heroName}`);
-        msg.channel.sendFile(heroImgFile, `${heroName}.png`);
+        global.message.reply(`${heroName}`);
+        global.message.channel.sendFile(heroImgFile, `${heroName}.png`);
     });
 };
+

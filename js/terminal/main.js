@@ -4,8 +4,7 @@ const global = {
     prefix: "[Terminal]",
     settings: require('../general/settings.js'),
     lib: require('../general/lib.js'),
-    program: {},
-    programSrc: {
+    program: {
         "rc": require('./commands/random-character.js'),
     },
     client: null,
@@ -20,37 +19,19 @@ const log = (msg) => {
 
 const init = (client) => {
     global.client = client;
-    for (const key in global.programSrc) {
-        global.program[key] = global.programSrc[key].init();
-    }
 };
 
 const exec = (fullcmdstr, msg) => {
     const argv = fullcmdstr.replace(/[\s　]+/g, " ").split(" ").filter(elem => elem !== "");
     if (argv.length === 0) return;
     const cmdstr = argv[0];
-    argv[0] = `\$${argv[0]}`;
-    argv.unshift(argv[0]);
     if (cmdstr === "help") {
-        const commandHelps = Object.keys(global.programSrc).map(cmd => `\$${cmd} : ${global.programSrc[cmd].explanation}`)
+        const commandHelps = Object.keys(global.program).map(cmd => `\$${cmd} : ${global.program[cmd].explanation}`)
         msg.reply(`These shell commands are available.\n${commandHelps.join("\n")}`);
     }
-    else if (cmdstr in global.programSrc) {
+    else if (cmdstr in global.program) {
         try {
-            const newArgv = argv.filter(arg => arg !== "--help" && arg !== "-h");
-            const param = global.program[cmdstr].parse(newArgv);
-            if (argv.length !== newArgv.length) { // help
-                try {
-                    global.program[cmdstr].outputHelp((help) => {
-                        msg.reply(help);
-                    });
-                }
-                catch (err) { // ライブラリのバグで常に例外を吐く
-                }
-            }
-            else {
-                global.programSrc[cmdstr].run(global.client, param, msg);
-            }
+            global.program[cmdstr].init(global.client, msg).parse(argv.slice(1));
         }
         catch (err) {
             msg.reply(err);
