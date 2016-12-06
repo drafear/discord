@@ -11,7 +11,7 @@ const global = {
     message: null,
 };
 
-exports.explanation = "Choose a random character.";
+exports.explanation = "Choose a random character";
 
 exports.init = (client, msg) => {
     global.client = client;
