@@ -1,4 +1,4 @@
-exports.token = "MjU0OTczNDkwNjg2NDU5OTA0.CyYCmQ.1iDutCmxi5gwSey542N37-mxkDs",
+exports.token = "MjU1NjgzMjAyODgxMDI4MDk3.CyhLfA.RyZaHaS0o3pJX6RFlDbQF-ak8Eo",
 exports.url = {
     list: "http://us.battle.net/forums/en/overwatch/21446648/",
     mongodb: (() => {
