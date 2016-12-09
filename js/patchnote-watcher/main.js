@@ -1,6 +1,7 @@
 'use strict';
 
 const global = {
+    settings: require('../general/settings.js'),
     prefix: "[Patchnote Watcher]",
     jsdom: require('jsdom'),
     lib: require('../general/lib.js'),
