@@ -8,9 +8,8 @@ const global = {
     client: null,
     db: null,
 };
-
 const say = (msg) => {
-    global.client.getTextChannel(global.settings.isTest ? "test" : "patchnotes").sendMessage(msg);
+    return global.client.getTextChannel(global.settings.isTest ? "test" : "patchnotes").sendMessage(msg);
 };
 const log = (msg) => {
     global.lib.log(global.client, global.prefix, msg);
@@ -48,8 +47,7 @@ const check = ({url, title}) => {
                     new global.db({ id: url }).save((err) => {
                         if (err) reject(err);
                         else {
-                            say(`\`\`\`${title}\`\`\`\n${url}`);
-                            resolve();
+                            say(`\`\`\`${title}\`\`\`\n${url}`).then(resolve).catch(reject);
                         }
                     });
                 }
@@ -77,7 +75,7 @@ exports.run = (client, db) => {
                 .then(global.lib.sleep(1000*60*60))
                 .then(loop)
                 .catch((err) => {
-                    error(err)
+                    error(err);
                 });
             log(`Memory Usage: ${global.lib.gc()}`);
         };
