@@ -45,6 +45,10 @@ exports.init = () => {
         client.on('ready', () => {
             init();
             resolve(client);
+        }).on('error', (err) => {
+            console.log(err);
+        }).on('disconnect', () => {
+            console.log("Disconnected");
         });
         client.login(global.settings.token);
     });
