@@ -79,6 +79,7 @@ exports.run = (client, db) => {
                 .catch((err) => {
                     error(err)
                 });
+            log(`Memory Usage: ${global.lib.gc()}`);
         };
         loop();
     }

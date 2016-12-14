@@ -1,13 +1,19 @@
 'use strict';
 
-const global = {
+const g = {
     sleep: require('promise.sleep'),
     settings: require('./settings.js'),
 };
 
+exports.gc = () => {
+    if ("gc" in global) {
+        global.gc();
+    }
+    return process.memoryUsage().heapUsed;
+};
 exports.sleep = (ms) => {
     return () => {
-        return global.sleep(ms);
+        return g.sleep(ms);
     }
 };
 const toString = (...objs) => {
@@ -18,10 +24,10 @@ const toString = (...objs) => {
 exports.log = (client, ...msgs) => {
     console.log.apply(null, msgs);
     const msg = toString.apply(null, msgs);
-    client.getTextChannel(global.settings.isTest ? "test" : "botlog").sendMessage(msg);
+    client.getTextChannel(g.settings.isTest ? "test" : "botlog").sendMessage(msg);
 };
 exports.error = (client, ...errors) => {
     console.error.apply(null, errors);
     const msg = toString.apply(null, errors);
-    client.getTextChannel(global.settings.isTest ? "test" : "botlog").sendMessage(`\`${msg}\``);
+    client.getTextChannel(g.settings.isTest ? "test" : "botlog").sendMessage(`\`${msg}\``);
 };
