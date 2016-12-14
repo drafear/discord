@@ -23,7 +23,7 @@ const getPatchnotes = () => {
         global.jsdom.env("http://us.battle.net/forums/en/overwatch/21446648/", [], (err, window) => {
             const res = [];
             if (err === null) {
-                const topics = window.document.querySelectorAll(".ForumTopic.has-blizzard-post.is-inactive");
+                const topics = window.document.querySelectorAll(".ForumTopic.has-blizzard-post");
                 for (const topic of topics) {
                     const title = topic.querySelector(".ForumTopic-title").textContent.replace(/[\n\r\t]/g, "");
                     if (title.search(/^\[(PC|ALL)\] Overwatch Patch Notes/) >= 0) {
