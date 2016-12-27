@@ -1,13 +1,13 @@
 'use strict';
 
-const global = {
+const g = {
     discord: require('discord.js'),
     settings: require('./settings.js'),
     lib: require('./lib.js'),
 };
 
 exports.init = () => {
-    const client = new global.discord.Client();
+    const client = new g.discord.Client();
     const init = () => {
         const channels = {
             text: {},
@@ -39,17 +39,11 @@ exports.init = () => {
             }
             return null;
         };
-        global.lib.log(client, `Logged in as ${client.user.username}#${client.user.discriminator}`);
+        g.lib.log(client, `Logged in as ${client.user.username}#${client.user.discriminator}`);
     };
-    return new Promise((resolve, reject) => {
-        client.on('ready', () => {
-            init();
-            resolve(client);
-        }).on('error', (err) => {
-            console.log(err);
-        }).on('disconnect', () => {
-            console.log("Disconnected");
-        });
-        client.login(global.settings.token);
-    });
+    client._login = client.login;
+    client.login = () => {
+        return client._login(g.settings.token).then(init);
+    };
+    return client.login().then(() => client);
 };

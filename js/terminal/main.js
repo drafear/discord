@@ -1,32 +1,49 @@
 'use strict';
 
-const global = {
+const g = {
     prefix: "[Terminal]",
     settings: require('../general/settings.js'),
     lib: require('../general/lib.js'),
-    program: {
-        "rc": require('./commands/random-character.js'),
-    },
+    commands: [
+        {
+            channel: "terminal",
+            testChannel: "test",
+            program: {
+                "rc": require('./commands/random-character.js'),
+            },
+        },
+        {
+            channel: "dev-terminal",
+            testChannel: "dev-terminal",
+            program: {
+                "info": require('./commands/info.js'),
+            },
+        },
+    ],
     client: null,
 };
 
 const error = (err) => {
-    global.lib.error(global.client, global.prefix, err);
+    g.lib.error(g.client, g.prefix, err);
 };
 const log = (msg) => {
-    global.lib.log(global.client, global.prefix, msg);
+    g.lib.log(g.client, g.prefix, msg);
 };
 
 const init = (client) => {
-    global.client = client;
+    g.client = client;
+    g.commands.forEach((cmd) => {
+        cmd.testChannel = g.client.getTextChannel(cmd.testChannel).id;
+        cmd.channel = g.client.getTextChannel(cmd.channel).id;
+    });
 };
 
-const exec = (fullcmdstr, msg) => {
+const exec = (fullcmdstr, msg, command) => {
     const argv = fullcmdstr.replace(/[\s　]+/g, " ").split(" ").filter(elem => elem !== "");
     if (argv.length === 0) return;
     const cmdstr = argv[0];
     if (cmdstr === "help") {
-        const commandHelps = Object.keys(global.program).map(cmd => [`\$${cmd}`, global.program[cmd].explanation]);
+        const commandHelps = Object.keys(command.program).map(cmd => [`\$${cmd}`, command.program[cmd].explanation]);
         commandHelps.push(["$help", "Show this help"])
         const maxCommandLength = commandHelps.map(cmd => cmd[0].length).reduce((a, b) => Math.max(a, b), 0);
         const spaces = [""];
@@ -34,9 +51,9 @@ const exec = (fullcmdstr, msg) => {
         const commandHelpStr = commandHelps.map(cmd => cmd[0]+spaces[maxCommandLength-cmd[0].length]+"  "+cmd[1]).join("\n");
         msg.reply(`These shell commands are available.\n\`\`\`${commandHelpStr}\`\`\``);
     }
-    else if (cmdstr in global.program) {
+    else if (cmdstr in command.program) {
         try {
-            global.program[cmdstr].init(global.client, msg).parse(argv.slice(1));
+            command.program[cmdstr].init(g.client, msg).parse(argv.slice(1));
         }
         catch (err) {
             msg.reply(err);
@@ -50,13 +67,20 @@ const exec = (fullcmdstr, msg) => {
 exports.run = (client) => {
     try {
         init(client);
-        const id = client.getTextChannel(global.settings.isTest ? "test" : "terminal").id;
         client.on('message', (msg) => {
-            if (msg.author.bot) return;
-            if (msg.channel.id === id) {
-                if (msg.content.match(/^\$/)) {
-                    exec(msg.content.replace(/^\$/, ""), msg);
-                }
+            try {
+                if (msg.author.bot) return;
+                if (msg.content.search(/^\$/) < 0) return;
+                const cmdstr = msg.content.replace(/^\$/, "");
+                g.commands.forEach((cmd) => {
+                    const channelId = g.settings.isTest ? cmd.testChannel : cmd.channel;
+                    if (msg.channel.id == channelId) {
+                        exec(cmdstr, msg, cmd);
+                    }
+                });
+            }
+            catch (err) {
+                error(err);
             }
         });
         log("Started");
@@ -64,4 +88,7 @@ exports.run = (client) => {
     catch (err) {
         error(err);
     }
+    return exports;
 };
+exports.pause = () => {};
+exports.resume = () => {};

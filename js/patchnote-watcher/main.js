@@ -1,25 +1,27 @@
 'use strict';
 
-const global = {
+const g = {
     settings: require('../general/settings.js'),
     prefix: "[Patchnote Watcher]",
     jsdom: require('jsdom'),
     lib: require('../general/lib.js'),
+    pauser: new (require('../general/pauser.js').Pauser)(),
     client: null,
     db: null,
+    interval: 1000 * 60 * 60,
 };
 const say = (msg) => {
-    return global.client.getTextChannel(global.settings.isTest ? "test" : "patchnotes").sendMessage(msg);
+    return g.client.getTextChannel(g.settings.isTest ? "test" : "patchnotes").sendMessage(msg);
 };
 const log = (msg) => {
-    global.lib.log(global.client, global.prefix, msg);
+    g.lib.log(g.client, g.prefix, msg);
 };
 const error = (msg) => {
-    global.lib.error(global.client, global.prefix, msg);
+    g.lib.error(g.client, g.prefix, msg);
 };
 const getPatchnotes = () => {
     return new Promise((resolve, reject) => {
-        global.jsdom.env("http://us.battle.net/forums/en/overwatch/21446648/", [], (err, window) => {
+        g.jsdom.env("http://us.battle.net/forums/en/overwatch/21446648/", [], (err, window) => {
             const res = [];
             if (err === null) {
                 const topics = window.document.querySelectorAll(".ForumTopic.has-blizzard-post");
@@ -39,12 +41,12 @@ const getPatchnotes = () => {
 };
 const check = ({url, title}) => {
     return new Promise((resolve, reject) => {
-        global.db.find({ id: url }, (err, data) => {
+        g.db.find({ id: url }, (err, data) => {
             if (err) reject(err);
             else {
                 if (data.length === 0) {
                     log(`New Patchnote: ${title}`);
-                    new global.db({ id: url }).save((err) => {
+                    new g.db({ id: url }).save((err) => {
                         if (err) reject(err);
                         else {
                             say(`\`\`\`${title}\`\`\`\n${url}`).then(resolve).catch(reject);
@@ -68,25 +70,28 @@ const update = () => {
 };
 exports.run = (client, db) => {
     try {
-        global.client = client;
-        global.db = db;
+        g.client = client;
+        g.db = db;
         const loop = () => {
-            update()
-                .then(global.lib.sleep(1000*60*60))
+            g.pauser.main()
+                .then(g.lib.sleep(g.interval))
                 .then(loop)
                 .catch((err) => {
                     error(err);
                 });
-            log(`Memory Usage: ${global.lib.gc()}`);
         };
+        g.pauser.set_main(update);
         loop();
     }
     catch (err) {
         error(err);
     }
+    return exports;
 };
 exports.createModel = (mongoose) => {
     return new mongoose.Schema({
         id: String,
     });
 };
+exports.pause = () => g.pauser.pause();
+exports.resume = () => g.pauser.resume();

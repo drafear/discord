@@ -1,14 +1,14 @@
 'use strict';
 
-const global = {
+const g = {
     mongoose: require('mongoose'),
     settings: require('./settings.js'),
 };
-global.mongoose.Promise = require('bluebird');
+g.mongoose.Promise = require('bluebird');
 
 exports.init = () => {
     return new Promise((resolve, reject) => {
-        const db = global.mongoose.createConnection(global.settings.url.mongodb, (err, res) => {
+        const db = g.mongoose.createConnection(g.settings.url.mongodb, (err, res) => {
             if (err) {
                 reject(err, res);
             }
@@ -17,7 +17,7 @@ exports.init = () => {
             }
         });
         exports.db = {
-            patchnotes: db.model('Patchnotes', require('../patchnote-watcher/main.js').createModel(global.mongoose)),
+            patchnotes: db.model('Patchnotes', require('../patchnote-watcher/main.js').createModel(g.mongoose)),
         };
     });
 };
