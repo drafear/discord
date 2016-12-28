@@ -46,12 +46,11 @@ const check = ({url, title}) => {
             else {
                 if (data.length === 0) {
                     log(`New Patchnote: ${title}`);
-                    new g.db({ id: url }).save((err) => {
-                        if (err) reject(err);
-                        else {
-                            say(`\`\`\`${title}\`\`\`\n${url}`).then(resolve).catch(reject);
-                        }
-                    });
+                    say(`\`\`\`${title}\`\`\`\n${url}`).then(() => {
+                        return g.db({ id: url }).save((err) => {
+                            if (err) throw err;
+                        });
+                    }).then(resolve, reject);
                 }
                 else {
                     resolve();
@@ -75,10 +74,10 @@ exports.run = (client, db) => {
         const loop = () => {
             g.pauser.main()
                 .then(g.lib.sleep(g.interval))
-                .then(loop)
                 .catch((err) => {
                     error(err);
-                });
+                })
+                .then(loop);
         };
         g.pauser.set_main(update);
         loop();

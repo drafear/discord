@@ -39,7 +39,7 @@ const main = () => {
         g.lib.error(g.client, err);
     }).on('disconnect', () => {
         g.lib.log(g.client, "Reconnecting...");
-        tm.pause().then(() => g.client.login).then(() => tm.resume()).catch((err) => {
+        tm.pause().then(() => g.client.login()).then(() => tm.resume()).catch((err) => {
             console.log(err);
         });
     });
