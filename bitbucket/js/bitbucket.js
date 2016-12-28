@@ -18,7 +18,10 @@ const error = (msg) => {
 };
 const init = () => {
     g.server = new g.hapi.Server();
-    g.server.connection({port: g.port});
+    g.server.connection({
+        port: g.port,
+        host: g.ip,
+    });
     g.server.route({
         method: 'POST',
         path: '/bitbucket',
