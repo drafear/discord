@@ -9,13 +9,15 @@ const g = {
     },
     client: null,
     message: null,
+    taskManager: null,
 };
 
 exports.explanation = "Choose a random character";
 
-exports.init = (client, msg) => {
+exports.init = (client, msg, taskManager) => {
     g.client = client;
     g.message = msg;
+    g.taskManager = taskManager;
     g.parser = g.lineparser.init({
         program: "$rc",
         name: "Random Character Chooser",

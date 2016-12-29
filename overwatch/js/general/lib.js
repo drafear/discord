@@ -23,11 +23,15 @@ const toString = (...objs) => {
 }
 exports.log = (client, ...msgs) => {
     console.log.apply(null, msgs);
-    const msg = toString.apply(null, msgs);
-    client.getTextChannel(g.settings.isTest ? "test" : "botlog").sendMessage(msg);
+    if (client.isLogin) {
+        const msg = toString.apply(null, msgs);
+        client.getTextChannel(g.settings.isTest ? "test" : "botlog").sendMessage(msg);
+    }
 };
 exports.error = (client, ...errors) => {
     console.error.apply(null, errors);
-    const msg = toString.apply(null, errors);
-    client.getTextChannel(g.settings.isTest ? "test" : "botlog").sendMessage(`\`${msg}\``);
+    if (client.isLogin) {
+        const msg = toString.apply(null, errors);
+        client.getTextChannel(g.settings.isTest ? "test" : "botlog").sendMessage(`\`${msg}\``);
+    }
 };

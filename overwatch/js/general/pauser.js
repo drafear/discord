@@ -14,11 +14,12 @@ class Pauser extends EventEmitter {
     }
     set_main(main_func) {
         this._main = () => {
-            if ("then" in main_func) {
-                return main_func;
+            const result = main_func();
+            if ("then" in result) {
+                return result;
             }
             else {
-                return Promise.resolve(main_func());
+                return Promise.resolve(result);
             }
         };
     }

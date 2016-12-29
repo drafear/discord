@@ -29,9 +29,8 @@ const init = () => {
 const main = () => {
     g.client.on('error', (err) => {
         g.lib.error(g.client, err);
-    }).on('disconnect', () => {
+    }).on('reconnecting', () => {
         g.lib.log(g.client, "Reconnecting...");
-        g.client.login();
     });
     g.bitbucket.run(g.client);
 };

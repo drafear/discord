@@ -5,6 +5,7 @@ const g = {
     prefix: "[Patchnote Watcher]",
     jsdom: require('jsdom'),
     lib: require('../general/lib.js'),
+    fetch: require('node-fetch'),
     pauser: new (require('../general/pauser.js').Pauser)(),
     client: null,
     db: null,
@@ -21,21 +22,22 @@ const error = (msg) => {
 };
 const getPatchnotes = () => {
     return new Promise((resolve, reject) => {
-        g.jsdom.env("http://us.battle.net/forums/en/overwatch/21446648/", [], (err, window) => {
-            const res = [];
-            if (err === null) {
-                const topics = window.document.querySelectorAll(".ForumTopic.has-blizzard-post");
-                for (const topic of topics) {
-                    const title = topic.querySelector(".ForumTopic-title").textContent.replace(/[\n\r\t]/g, "");
-                    if (title.search(/^\[(PC|ALL)\] Overwatch Patch Notes/) >= 0) {
-                        res.push({ url: topic.href, title: title });
+        g.jsdom.env({
+            url: "http://us.battle.net/forums/en/overwatch/21446648/",
+            done: (err, window) => {
+                if (err === null) {
+                    const res = [];
+                    const topics = window.document.querySelectorAll(".ForumTopic");
+                    for (const topic of topics) {
+                        const title = topic.querySelector(".ForumTopic-title").textContent.replace(/[\n\r\t]/g, "");
+                        if (title.search(/^\[(PC|ALL)\] Overwatch Patch Notes/) >= 0) {
+                            res.push({ url: topic.href, title: title });
+                        }
                     }
+                    resolve(res);
                 }
-                resolve(res);
-            }
-            else {
-                reject(err);
-            }
+                else reject(err);
+            },
         });
     });
 };
@@ -93,5 +95,20 @@ exports.createModel = (mongoose) => {
         id: String,
     });
 };
+exports.getList = () => {
+    return new Promise((resolve, reject) => {
+        g.db.find({}, (err, data) => {
+            if (err) reject(err);
+            else {
+                resolve(data.map(doc => doc.id));
+            }
+        });
+    });
+};
+exports.remove = (target) => {
+    if (target === null || target === undefined) throw new Error("arg:target is null or undefined");
+    return g.db.remove({ id: target });
+};
+exports.update = update;
 exports.pause = () => g.pauser.pause();
 exports.resume = () => g.pauser.resume();

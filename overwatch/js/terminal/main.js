@@ -14,9 +14,10 @@ const g = {
         },
         {
             channel: "dev-terminal",
-            testChannel: "dev-terminal",
+            testChannel: "dev-terminal-test",
             program: {
                 "info": require('./commands/info.js'),
+                "patchnotes": require('./commands/patchnotes.js'),
             },
         },
     ],
@@ -53,7 +54,7 @@ const exec = (fullcmdstr, msg, command) => {
     }
     else if (cmdstr in command.program) {
         try {
-            command.program[cmdstr].init(g.client, msg).parse(argv.slice(1));
+            command.program[cmdstr].init(g.client, msg, g.taskManager).parse(argv.slice(1));
         }
         catch (err) {
             msg.reply(err);
@@ -64,8 +65,9 @@ const exec = (fullcmdstr, msg, command) => {
     }
 };
 
-exports.run = (client) => {
+exports.run = (client, taskManager) => {
     try {
+        g.taskManager = taskManager;
         init(client);
         client.on('message', (msg) => {
             try {

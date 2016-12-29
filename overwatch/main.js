@@ -5,7 +5,7 @@ const g = {
     discord: require('./js/general/discord.js'),
     model: require('./js/general/model.js'),
     settings: require('./js/general/settings.js'),
-    taskManager: require('./js/general/task-manager.js'),
+    taskManager: require('./js/general/task-manager.js').TaskManager,
     bluebird: require("bluebird"),
     client: null,
 };
@@ -31,14 +31,21 @@ const init = () => {
 };
 
 const main = () => {
-    const tm = new g.taskManager.TaskManager([
-        require('./js/patchnote-watcher/main.js').run(g.client, g.model.db.patchnotes),
-        require('./js/terminal/main.js').run(g.client),
+    const tm = new g.taskManager([
+        {
+            name: "patchnote-watcher",
+            task: require('./js/patchnote-watcher/main.js').run(g.client, g.model.db.patchnotes),
+        },
+        {
+            name: "terminal",
+            task: require('./js/terminal/main.js'),
+        },
     ]);
+    tm.task("terminal").run(g.client, tm);
     g.client.on('error', (err) => {
-        g.lib.error(g.client, err);
+        error(g.client, err);
     }).on('reconnecting', () => {
-        g.lib.log(g.client, "Reconnecting...");
+        console.log("Reconnecting...");
         // tm.pause().then(() => g.client.login()).then(() => tm.resume()).catch((err) => {
         //     console.log(err);
         // });
