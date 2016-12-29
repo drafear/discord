@@ -13,7 +13,7 @@ exports.gc = () => {
 };
 exports.sleep = (ms) => {
     return () => {
-        return g.sleep(ms);
+        return g.sleep(Math.round(ms));
     }
 };
 const toString = (...objs) => {

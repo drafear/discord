@@ -41,9 +41,17 @@ exports.init = () => {
         };
         g.lib.log(client, `Logged in as ${client.user.username}#${client.user.discriminator}`);
     };
+    client.on('disconnect', () => {
+        client.isLogin = false;
+    });
+    client.on('ready', () => {
+        client.isLogin = true;
+        init();
+    });
     client._login = client.login;
     client.login = () => {
-        return client._login(g.settings.token).then(init);
+        if (client.isLogin) return;
+        return client._login(g.settings.token);
     };
     return client.login().then(() => client);
 };

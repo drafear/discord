@@ -73,10 +73,11 @@ exports.run = (client, db) => {
         g.db = db;
         const loop = () => {
             g.pauser.main()
-                .then(g.lib.sleep(g.interval))
+                .then(g.lib.sleep(g.interval*9/10))
                 .catch((err) => {
                     error(err);
                 })
+                .then(g.lib.sleep(g.interval/10))
                 .then(loop);
         };
         g.pauser.set_main(update);
