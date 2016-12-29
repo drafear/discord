@@ -6,8 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node main.js",
-    "dbstart": "mongod --nojournal --noprealloc --dbpath db",
-    "stop": "forever stopall"
+    "dbstart": "mongod --nojournal --noprealloc --dbpath db"
   },
   "author": "",
   "license": "ISC",
