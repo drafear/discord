@@ -7,7 +7,7 @@ const g = {
 };
 
 exports.init = () => {
-    const client = new g.discord.Client();
+    const client = new g.discord.Client({ autoReconnect: true });
     const init = () => {
         const channels = {
             text: {},
