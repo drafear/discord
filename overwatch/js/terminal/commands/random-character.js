@@ -5,7 +5,7 @@ const g = {
     fs: require('fs'),
     classes: ["offense", "defense", "tank", "support"],
     path: {
-        imgroot: "image/hero",
+        imgroot: "overwatch/image/hero",
     },
     client: null,
     message: null,
